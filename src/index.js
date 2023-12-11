@@ -1,82 +1,37 @@
-const React = {
-  createElement,
-};
+import React from "./react";
+import ReactDOM from "./react-dom";
 
-const ReactDOM = {
-  render: (vnode, container) => {
-    container.innerHTML = ""; // 多次调用时，清除原有的内容
-    return render(vnode, container);
-  },
-};
-
-function createElement(tag, attrs, ...children) {
-  return {
-    tag,
-    attrs,
-    children,
-  };
-}
-
-function render(vnode, container) {
-  if (typeof vnode === "string") {
-    let textNode = document.createTextNode(vnode);
-    return container.appendChild(textNode);
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      num: 1,
+    };
   }
 
-  const dom = document.createElement(vnode.tag);
-
-  if (vnode.attrs) {
-    Object.keys(vnode.attrs).forEach((key) => {
-      const value = vnode.attrs[key];
-      setAttribute(dom, key, value);
-    });
+  onClick() {
+    this.setState({ num: this.state.num + 1 });
   }
 
-  vnode.children.forEach((child) => render(child, dom));
-
-  return container.appendChild(dom);
-}
-
-function setAttribute(dom, name, value) {
-  // 如果属性名是class，则改回className
-  if (name === "className") name = "class";
-
-  // 如果属性名是onXXX，则是一个时间监听方法
-  if (/on\w+/.test(name)) {
-    name = name.toLowerCase();
-    dom[name] = value || "";
-    // 如果属性名是style，则更新style对象
-  } else if (name === "style") {
-    if (!value || typeof value === "string") {
-      dom.style.cssText = value || "";
-    } else if (value && typeof value === "object") {
-      for (let name in value) {
-        // 可以通过style={ width: 20 }这种形式来设置样式，可以省略掉单位px
-        dom.style[name] =
-          typeof value[name] === "number" ? value[name] + "px" : value[name];
-      }
-    }
-    // 普通属性则直接更新属性
-  } else {
-    if (name in dom) {
-      dom[name] = value || "";
-    }
-    if (value) {
-      dom.setAttribute(name, value);
-    } else {
-      dom.removeAttribute(name, value);
-    }
+  render() {
+    return (
+      <div>
+        <h1>count: {this.state.num}</h1>
+        <button onClick={() => this.onClick()}>add</button>
+      </div>
+    );
   }
 }
 
-function tick() {
-  const element = (
-    <div>
-      <h1>Hello, world!</h1>
-      <h2>It is {new Date().toLocaleTimeString()}.</h2>
-    </div>
-  );
-  ReactDOM.render(element, document.getElementById("root"));
-}
+// class Welcome extends React.Component {
+//   constructor(props) {
+//     super(props);
+//   }
 
-setInterval(tick, 1000);
+//   render() {
+//     return <h1>Hello, {this.props.name}</h1>;
+//   }
+// }
+
+// ReactDOM.render(<Welcome name="jack" />, document.getElementById("root"));
+ReactDOM.render(<Counter />, document.getElementById("root"));
